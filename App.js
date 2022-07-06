@@ -9,12 +9,16 @@
 import React, {useEffect, useState} from 'react';
 import {
   Button,
+  Modal,
   Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const timeout = ms => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -35,7 +39,46 @@ const ColorCard = ({color, onPress, flash}) => {
   );
 };
 
-const App = () => {
+const Stack = createNativeStackNavigator();
+
+const AppWrapper = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={App}
+          options={{title: 'Welcome'}}
+        />
+        <Stack.Screen
+          name="Results"
+          component={Results}
+          options={{title: 'Results'}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+const Results = ({navigation, route}) => {
+  // const [text, onChangeText] = useState('');
+  // const [modalVisible, setModalVisible] = useState(false);
+  return (
+    <Text>This is {route.params.name}'s profile</Text>
+    //- A list of the 10 best results and the name of the player.
+    //- A button redirecting to start a new game.
+    // <Modal
+    //   visible={modalVisible}
+    //   onRequestClose={() => {
+    //     setModalVisible(!modalVisible);
+    //   }}>
+    //   <Text>enter you name</Text>
+    //   <TextInput onChangeText={onChangeText} value={text} />
+    // </Modal>
+  );
+};
+
+const App = ({navigation}) => {
   const [isOn, setIsOn] = useState(false);
 
   const colorList = [
@@ -70,7 +113,6 @@ const App = () => {
   const [topScore, setTopScore] = useState(0);
 
   function startHandle() {
-    console.log('start');
     setIsOn(true);
   }
 
@@ -144,6 +186,9 @@ const App = () => {
         if (play.score > topScore) {
           setTopScore(play.score);
         }
+        // open modal
+        // when closing modal, navigate to results page with name of user and score showing in the results list
+        navigation.navigate('Results', {name: 'Results'});
       }
       await timeout(250);
       setFlashColor('');
@@ -183,7 +228,9 @@ const App = () => {
         {isOn && (play.isDisplay || play.userPlay) ? (
           <Text style={{width: '33%'}}>current Score:{play.score}</Text>
         ) : (
-          <Text style={{width: '33%'}}>Final Score: {play.score}</Text>
+          <View>
+            <Text style={{width: '33%'}}>Final Score: {play.score}</Text>
+          </View>
         )}
       </View>
       <View style={styles.score}>
@@ -218,4 +265,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default AppWrapper;
