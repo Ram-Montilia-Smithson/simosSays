@@ -61,25 +61,19 @@ const AppWrapper = () => {
 };
 
 const Results = ({navigation, route}) => {
-  // const [text, onChangeText] = useState('');
-  // const [modalVisible, setModalVisible] = useState(false);
   return (
-    <Text>This is {route.params.name}'s profile</Text>
+    <Text>
+      {route.params.name} scored: {route.params.score}
+    </Text>
     //- A list of the 10 best results and the name of the player.
     //- A button redirecting to start a new game.
-    // <Modal
-    //   visible={modalVisible}
-    //   onRequestClose={() => {
-    //     setModalVisible(!modalVisible);
-    //   }}>
-    //   <Text>enter you name</Text>
-    //   <TextInput onChangeText={onChangeText} value={text} />
-    // </Modal>
   );
 };
 
 const App = ({navigation}) => {
   const [isOn, setIsOn] = useState(false);
+  const [name, setName] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   const colorList = [
     {
@@ -186,9 +180,7 @@ const App = ({navigation}) => {
         if (play.score > topScore) {
           setTopScore(play.score);
         }
-        // open modal
-        // when closing modal, navigate to results page with name of user and score showing in the results list
-        navigation.navigate('Results', {name: 'Results'});
+        setModalVisible(true);
       }
       await timeout(250);
       setFlashColor('');
@@ -198,6 +190,12 @@ const App = ({navigation}) => {
   function closeHandle() {
     setIsOn(false);
   }
+
+  const closeModal = () => {
+    setModalVisible(!modalVisible);
+    navigation.navigate('Results', {name: name, score: play.score});
+    setName('');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -228,14 +226,26 @@ const App = ({navigation}) => {
         {isOn && (play.isDisplay || play.userPlay) ? (
           <Text style={{width: '33%'}}>current Score:{play.score}</Text>
         ) : (
-          <View>
-            <Text style={{width: '33%'}}>Final Score: {play.score}</Text>
+          <View style={{width: '33%'}}>
+            <Text>Final Score: {play.score}</Text>
           </View>
         )}
       </View>
       <View style={styles.score}>
         <Text style={styles.scoreText}>Top Score: {topScore}</Text>
       </View>
+      <Modal
+        presentationStyle={'formSheet'}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => {
+          closeModal();
+        }}>
+        <Text>You scored: {play.score}</Text>
+        <Text>Please enter you name:</Text>
+        <TextInput onChangeText={setName} value={name} />
+        <Button title="Close" onPress={() => closeModal()} />
+      </Modal>
     </SafeAreaView>
   );
 };
