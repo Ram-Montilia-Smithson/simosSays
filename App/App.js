@@ -12,9 +12,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Results from './components/results';
 import Game from './components/game';
 import { Provider } from 'react-redux';
-import configureStore from './state-management/store';
+import { store } from './state-management/store';
 
-const store = configureStore()
 const Stack = createNativeStackNavigator();
 
 const App = () => {
